@@ -1,6 +1,6 @@
-erDiagram
 ```mermaid
-<
+erDiagram
+   
     User {
         varchar username
         varchar password
@@ -81,19 +81,19 @@ erDiagram
     }
 
     User ||--o{ Goal : has
-    User ||--o{ Routine : has
-    User ||--o{ Nutrition : has
-    User ||--o{ Professionals : assigned to
+    User ||--o{ Routine : creates
+    User ||--o{ Food : enters
+    User ||--o{ Professionals : communicates_with
     Professionals ||--o{ Routine : creates
-    Professionals ||--o{ Nutrition : creates
-    Professionals ||--o{ User : manages
-    Goal }o--|| User : belongs to
-    Routine }o--|| User : part of
-    Nutrition }o--|| User : part of
+    Professionals ||--o{ Meal : creates
+    Professionals ||--o{ User : works_with
+    Goal }o--|| User : belongs 
+    Routine }o--|| User : used_by
+    Nutrition }o--|| User : part_of
     Routine }o--|| Activity : includes
-    Meal }o--|| Nutrition : contains
-    Nutrition }o--|| Meal : contains
-    User ||--o{ Client: is
+    Food }o--|| Meal: eaten_during 
+    Meal }o--|| Nutrition: contains
+    Client }o--|| Professionals: has
     Client }o--|| User: is
-               
-    >
+``` 
+
