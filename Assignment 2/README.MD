@@ -673,104 +673,129 @@ def delete_client(client_id: int):
     del clients[client_index]
     return
 
-
-### --- Database Integration (Placeholder) ---
-
-#### In a real application, you would replace the dummy data with a database.
-#### You would typically use an ORM like SQLAlchemy to interact with the database.
-#### The data models would then be mapped to database tables.
-#### You would also need to handle database connections, sessions, and transactions.
-
-#### Example using SQLAlchemy:
-#### from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Time, ForeignKey
-#### from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-
-#### DATABASE_URL = "sqlite:///./test.db"  # Replace with your database URL
-
-#### engine = create_engine(DATABASE_URL)
-#### SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-#### Base = declarative_base()
-
-#### class UserDB(Base):
-####    __tablename__ = "users"
-
-####     userID = Column(Integer, primary_key=True, index=True)
-####     username = Column(String)
-####     password = Column(String)
-####     email = Column(String)
-####     gender = Column(String)
-####     height = Column(Float)
-####     weight = Column(Float)
-####     dateofbirth = Column(Date)
-####     goalID = Column(Integer, ForeignKey("goals.goalID"))
-####     routineID = Column(Integer, ForeignKey("routines.routineID"))
-####     nutritionID = Column(Integer, ForeignKey("nutritions.nutritionID"))
-####     professionalID = Column(Integer, ForeignKey("professionals.professionalID"))
-
-####     goals = relationship("GoalDB", back_populates="user")
-####     routines = relationship("RoutineDB", back_populates="user")
-####     nutritions = relationship("NutritionDB", back_populates="user")
-####     professionals = relationship("ProfessionalDB", back_populates="user")
-
-
-#### class GoalDB(Base):
-####     __tablename__ = "goals"
-
-####     goalID = Column(Integer, primary_key=True, index=True)
-####     userID = Column(Integer, ForeignKey("users.userID"))
-####     goaltype = Column(String)
-####     goalvalue = Column(Float)
-####     startdate = Column(Date)
-####     enddate = Column(Date)
-
-####     user = relationship("UserDB", back_populates="goals")
-
-
-#### Base.metadata.create_all(bind=engine)  # Create tables
-
-#### Example usage:
-#### from sqlalchemy.orm import Session
-
-#### def create_user_db(db: Session, user: UserCreate):
-####     db_user = UserDB(**user.dict())
-####     db.add(db_user)
-####     db.commit()
-####     db.refresh(db_user)
-####     return db_user
-content_copy
-download
-Use code with caution.
-Python
-
-####
-Install Dependencies:
-
-pip install fastapi uvicorn pydantic
-content_copy
-download
-Use code with caution.
-Bash
- 
-####SQLAlchemy:
-
-pip install fastapi uvicorn pydantic sqlalchemy
-content_copy
-download
-Use code with caution.
-Bash
-
-####Run the API:
-
-uvicorn main:app --reload
-content_copy
-download
-Use code with caution.
-Bash
-
+)
 
 3.Create Pydantic models that mirror your ERD and assist to validate Create, Read, Update, Delete (CRUD) apps for your ERD
 
-4.Develop an initial set of CRUD transactions that would begin to develop and use the entities from your domain. We are not implementing any meaningful logic right now, just simply performaing basic state (CRUD) operations
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import date, time
 
+class UserBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    gender: Optional[str] = None
+    height: Optional[float] = None
+    weight: Optional[float] = None
+    dateofbirth: Optional[date] = None
 
+class UserCreate(UserBase):
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
+
+class User(UserBase):
+    userID: int
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
+
+class ProfessionalBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    profession: Optional[str] = None
+    specialty: Optional[str] = None
+
+class ProfessionalCreate(ProfessionalBase):
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+
+class Professional(ProfessionalBase):
+    professionalID: int
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+
+class GoalBase(BaseModel):
+    userID: int
+    goaltype: str
+    goalvalue: float
+    startdate: date
+    enddate: date
+
+class GoalCreate(GoalBase):
+    pass
+
+class Goal(GoalBase):
+    goalID: int
+
+class ActivityBase(BaseModel):
+    activitydate: date
+    starttime: time
+    endtime: time
+    activitytype: str
+
+class ActivityCreate(ActivityBase):
+    pass
+
+class Activity(ActivityBase):
+    activityID: int
+
+class RoutineBase(BaseModel):
+    activityID: int
+
+class RoutineCreate(RoutineBase):
+    pass
+
+class Routine(RoutineBase):
+    routineID: int
+
+class FoodBase(BaseModel):
+    FoodName: str
+    FoodBrand: Optional[str] = None
+    servingsize: float
+    servingunit: str
+    calories: float
+    protein: float
+    carbohydrates: float
+    fat: float
+    sodium: float
+
+class FoodCreate(FoodBase):
+    pass
+
+class Food(FoodBase):
+    foodID: int
+
+class MealBase(BaseModel):
+    nutritionID: int
+    mealdate: date
+    mealtime: time
+    mealtype: str
+
+class MealCreate(MealBase):
+    pass
+
+class Meal(MealBase):
+    mealID: int
+
+class NutritionBase(BaseModel):
+    mealID: int
+
+class NutritionCreate(NutritionBase):
+    pass
+
+class Nutrition(NutritionBase):
+    nutritionID: int
+
+class ClientBase(BaseModel):
+    userID: int
+
+class ClientCreate(ClientBase):
+    pass
+
+class Client(ClientBase):
+    clientID: int
