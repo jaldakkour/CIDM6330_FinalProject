@@ -161,17 +161,17 @@ class MyCSVRepo(BaseProductRepository):
 
     def __init__(self, filename: str, id_field: str, fieldnames: list):
 
-        self.repo = list[Product] # this is a typehint for a list of Product objects
+        self.repo = list[UserBase] # this is a typehint for a list of User objects
         self.filename = filename
         self.fieldnames = fieldnames
 
         with open(filename, mode="r", newline="") as file:
             csv_reader = csv.DictReader(file)
             # list comprehension: https://www.w3schools.com/python/python_lists_comprehension.asp
-            self.repo = [Product(**row) for row in csv_reader]
+            self.repo = [UserBase(**row) for row in csv_reader]
 
-    def do_create(self, product: Product):
-        self.repo.append(product)
+    def do_create(self, userbase: UserBase):
+        self.repo.append(UserBase)
         self.do_save_file()
 
     def read_all(self):
@@ -180,14 +180,14 @@ class MyCSVRepo(BaseProductRepository):
     def do_read(self, id):
         return self.repo[str(id)]
 
-    def do_update(self, id, product: Product):
-        self.repo[str(id)] = product
+    def do_update(self, id, userbase: UserBase):
+        self.repo[str(id)] = userbase
         self.do_save_file()
 
     def do_delete(self, id):
-        for product in self.repo:
-            if int(product.id) == int(id):
-                self.repo.remove(product)
+        for userbase in self.repo:
+            if int(userbase.id) == int(id):
+                self.repo.remove(userbase)
                 break
 
         self.do_save_file()
@@ -196,18 +196,18 @@ class MyCSVRepo(BaseProductRepository):
         with open(self.filename, mode="w", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=self.fieldnames)
             writer.writeheader()
-            for product in self.repo:
-                writer.writerow(asdict(product))
+            for userbase in self.repo:
+                writer.writerow(asdict(userbase))
 
 
 class MyMemoryRepo(BaseProductRepository):
 
     def __init__(self, id_field: str):
 
-        self.repo = list[Product]
+        self.repo = list[UserBase]
 
-    def do_create(self, product: Product):
-        self.repo.append(product)
+    def do_create(self, userbase: UserBase):
+        self.repo.append(userbase)
 
     def read_all(self):
         return self.repo
@@ -215,13 +215,13 @@ class MyMemoryRepo(BaseProductRepository):
     def do_read(self, id):
         return self.repo[id]
 
-    def do_update(self, id, product: Product):
-        self.repo[id] = product
+    def do_update(self, id, userbase: UserBase):
+        self.repo[id] = userbase
 
     def do_delete(self, id):
-        for product in self.repo:
-            if int(product.id) == int(id):
-                self.repo.remove(product)
+        for useerbase in self.repo:
+            if int(userbase.id) == int(id):
+                self.repo.remove(userbase)
                 break
         
 
@@ -229,7 +229,8 @@ class MyMemoryRepo(BaseProductRepository):
 # Defining main function
 def main():
     print("generic repository example")
-    csv_repo = MyCSVRepo("products.csv", "id", ["id", "name", "price"])
+    csv_repo = MyCSVRepo("users.csv", "id", ["userid", "firstname", "lastname", "username", "password", "email", "gender", "height", "weight", "dateofbirth"])
+
     # csv_repo.do_create(Product(1, "apple", 1.99))
     # csv_repo.do_create(Product(2, "banana", 0.99))
     # csv_repo.do_create(Product(3, "cherry", 2.99))
