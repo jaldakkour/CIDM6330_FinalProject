@@ -1,8 +1,5 @@
-#IMPORT ABSTRACT METHOD
-
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict, field, InitVar
-import csv
+from sqlmodel import SQLModel, create_engine, Session, Field, select
 
 
 # typehints review
@@ -32,127 +29,270 @@ x: tuple[int, ...] = (1, 2, 3)  # Python 3.9+
 # On Python 3.10+, use the | operator when something could be one of a few types
 x: list[int | str] = [3, 5, "test", "fun"]  # Python 3.10+
 
-
-@dataclass
-class Product:
-    id: int
+# Define the model
+class Item(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
     name: str
-    price: float
 
+# Data Models (Pydantic)
+@dataclass 
+class UserBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    gender: Optional[str] = None
+    height: Optional[float] = None
+    weight: Optional[float] = None
+    dateofbirth: Optional[date] = None
 
-class BaseProductRepository(ABC):
+class UserCreate(UserBase):
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
+
+class User(UserBase):
+    userID: int
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
+
+class ProfessionalBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    profession: Optional[str] = None
+    specialty: Optional[str] = None
+
+class ProfessionalCreate(ProfessionalBase):
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+
+class Professional(ProfessionalBase):
+    professionalID: int
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+
+class GoalBase(BaseModel):
+    userID: int
+    goaltype: str
+    goalvalue: float
+    startdate: date
+    enddate: date
+
+class GoalCreate(GoalBase):
+    pass
+
+class Goal(GoalBase):
+    goalID: int
+
+class ActivityBase(BaseModel):
+    activitydate: date
+    starttime: time
+    endtime: time
+    activitytype: str
+
+class ActivityCreate(ActivityBase):
+    pass
+
+class Activity(ActivityBase):
+    activityID: int
+
+class RoutineBase(BaseModel):
+    activityID: int
+
+class RoutineCreate(RoutineBase):
+    pass
+
+class Routine(RoutineBase):
+    routineID: int
+
+class FoodBase(BaseModel):
+    FoodName: str
+    FoodBrand: Optional[str] = None
+    servingsize: float
+    servingunit: str
+    calories: float
+    protein: float
+    carbohydrates: float
+    fat: float
+    sodium: float
+
+class FoodCreate(FoodBase):
+    pass
+
+class Food(FoodBase):
+    foodID: int
+
+class MealBase(BaseModel):
+    nutritionID: int
+    mealdate: date
+    mealtime: time
+    mealtype: str
+
+class MealCreate(MealBase):
+    pass
+
+class Meal(MealBase):
+    mealID: int
+
+class NutritionBase(BaseModel):
+    mealID: int
+
+class NutritionCreate(NutritionBase):
+    pass
+
+class Nutrition(NutritionBase):
+    nutritionID: int
+
+class ClientBase(BaseModel):
+    userID: int
+
+class ClientCreate(ClientBase):
+    pass
+
+class Client(ClientBase):
+    clientID: int
+
+# Repository Interface
+class Repository(ABC):
     @abstractmethod
-    def do_create(self, product: Product):
+    def create_user(self, user: UserCreate) -> User:
         pass
 
     @abstractmethod
-    def read_all(self):
+    def get_user(self, user_id: int) -> Optional[User]:
         pass
 
     @abstractmethod
-    def do_read(self, id):
+    def get_users(self) -> List[User]:
         pass
 
     @abstractmethod
-    def do_update(self, id, product: Product):
+    def update_user(self, user_id: int, user: UserCreate) -> Optional[User]:
         pass
 
     @abstractmethod
-    def do_delete(self, id):
+    def delete_user(self, user_id: int) -> None:
         pass
 
+    # Add other methods for other models (Professionals, Goals, etc.)
+    # ... (similar abstract methods for other models)
 
-class MyCSVRepo(BaseProductRepository):
-    """
-    Note: CSV files don’t maintain data types. All field values are considered str and empty values are considered None.
-    """
+# In-Memory Repository
+class InMemoryRepository(Repository):
+    def __init__(self):
+        self.users: dict[int, User] = {}
+        self.user_id_counter = 1
 
-    def __init__(self, filename: str, id_field: str, fieldnames: list):
+    def create_user(self, user: UserCreate) -> User:
+        user_id = self.user_id_counter
+        self.user_id_counter += 1
+        new_user = User(userID=user_id, **user.dict())
+        self.users[user_id] = new_user
+        return new_user
 
-        self.repo = list[Product] # this is a typehint for a list of Product objects
+    def get_user(self, user_id: int) -> Optional[User]:
+        return self.users.get(user_id)
+
+    def get_users(self) -> List[User]:
+        return list(self.users.values())
+
+    def update_user(self, user_id: int, user: UserCreate) -> Optional[User]:
+        if user_id in self.users:
+            updated_user = User(userID=user_id, **user.dict())
+            self.users[user_id] = updated_user
+            return updated_user
+        return None
+
+    def delete_user(self, user_id: int) -> None:
+        if user_id in self.users:
+            del self.users[user_id]
+
+# CSV Repository (Example for Users)
+class CSVRepository(Repository):
+    def __init__(self, filename: str = "users.csv"):
         self.filename = filename
-        self.fieldnames = fieldnames
+        self.users: dict[int, User] = self._load_users()
+        self.user_id_counter = max(self.users.keys(), default=0) + 1
 
-        with open(filename, mode="r", newline="") as file:
-            csv_reader = csv.DictReader(file)
-            # list comprehension: https://www.w3schools.com/python/python_lists_comprehension.asp
-            self.repo = [Product(**row) for row in csv_reader]
+    def _load_users(self) -> dict[int, User]:
+        users = {}
+        try:
+            with open(self.filename, mode='r', newline='', encoding='utf-8') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    user_id = int(row['userID'])
+                    users[user_id] = User(**row)
+        except FileNotFoundError:
+            pass
+        return users
 
-    def do_create(self, product: Product):
-        self.repo.append(product)
-        self.do_save_file()
-
-    def read_all(self):
-        return self.repo
-
-    def do_read(self, id):
-        return self.repo[str(id)]
-
-    def do_update(self, id, product: Product):
-        self.repo[str(id)] = product
-        self.do_save_file()
-
-    def do_delete(self, id):
-        for product in self.repo:
-            if int(product.id) == int(id):
-                self.repo.remove(product)
-                break
-
-        self.do_save_file()
-
-    def do_save_file(self):
-        with open(self.filename, mode="w", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=self.fieldnames)
+    def _save_users(self):
+        with open(self.filename, mode='w', newline='', encoding='utf-8') as file:
+            fieldnames = User.__fields__.keys()
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
-            for product in self.repo:
-                writer.writerow(asdict(product))
+            for user in self.users.values():
+                writer.writerow(user.dict())
 
+    def create_user(self, user: UserCreate) -> User:
+        user_id = self.user_id_counter
+        self.user_id_counter += 1
+        new_user = User(userID=user_id, **user.dict())
+        self.users[user_id] = new_user
+        self._save_users()
+        return new_user
 
-class MyMemoryRepo(BaseProductRepository):
+    def get_user(self, user_id: int) -> Optional[User]:
+        return self.users.get(user_id)
 
-    def __init__(self, id_field: str):
+    def get_users(self) -> List[User]:
+        return list(self.users.values())
 
-        self.repo = list[Product]
+    def update_user(self, user_id: int, user: UserCreate) -> Optional[User]:
+        if user_id in self.users:
+            updated_user = User(userID=user_id, **user.dict())
+            self.users[user_id] = updated_user
+            self._save_users()
+            return updated_user
+        return None
 
-    def do_create(self, product: Product):
-        self.repo.append(product)
+    def delete_user(self, user_id: int) -> None:
+        if user_id in self.users:
+            del self.users[user_id]
+            self._save_users()
+# SQL Repository (Example - needs Database)
+# Example of a simple SQL repository, but requires a database setup.
+# class SQLRepository(Repository):
+#    def __init__(self, database_url: str):
+#        self.engine = create_engine(database_url)
+#        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+#        Base.metadata.create_all(bind=self.engine)
+#
+#    def get_db(self):
+#        db = self.SessionLocal()
+#        try:
+#            yield db
+#        finally:
+#            db.close()
+#
+#    def create_user(self, user: UserCreate) -> User:
+#        db = next(self.get_db())
+#        db_user = User(**user.dict())
+#        db.add(db_user)
+#        db.commit()
+#        db.refresh(db_user)
+#        return db_user
+#
+#    # ... (implement other methods)
 
-    def read_all(self):
-        return self.repo
+# Instantiate Repositories
+in_memory_repo = InMemoryRepository()
+csv_repo = CSVRepository()
+# sql_repo = SQLRepository("sqlite:///./test.db") # Example SQL repo.
 
-    def do_read(self, id):
-        return self.repo[id]
-
-    def do_update(self, id, product: Product):
-        self.repo[id] = product
-
-    def do_delete(self, id):
-        for product in self.repo:
-            if int(product.id) == int(id):
-                self.repo.remove(product)
-                break
-        
-
-
-# Defining main function
-def main():
-    print("generic repository example")
-    csv_repo = MyCSVRepo("products.csv", "id", ["id", "name", "price"])
-    # csv_repo.do_create(Product(1, "apple", 1.99))
-    # csv_repo.do_create(Product(2, "banana", 0.99))
-    # csv_repo.do_create(Product(3, "cherry", 2.99))
-
-    # csv_repo.do_create(Product(4, "pear", 1.59))
-    # csv_repo.do_create(Product(5, "raspberry", 1.09))
-    # csv_repo.do_create(Product(6, "lemon", 0.59))
-
-    # csv_repo.do_create(Product(7, "pineapple", 5.99))
-    csv_repo.do_delete(3)
-
-    print(csv_repo.read_all())
-
-
-# Using the special variable
-# __name__
+# FastAPI
 if __name__ == "__main__":
     main()
