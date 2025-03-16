@@ -211,6 +211,52 @@ class InMemoryRepository(Repository):
             del self.users[user_id]
 
 # CSV Repository (Example for Users)
+
+class MyCSVRepo(BaseProductRepository):
+    """
+    Note: CSV files don’t maintain data types. All field values are considered str and empty values are considered None.
+    """
+
+    def __init__(self, filename: str, id_field: str, fieldnames: list):
+
+        self.repo = list[Product] # this is a typehint for a list of Product objects
+        self.filename = filename
+        self.fieldnames = fieldnames
+
+        with open(filename, mode="r", newline="") as file:
+            csv_reader = csv.DictReader(file)
+            # list comprehension: https://www.w3schools.com/python/python_lists_comprehension.asp
+            self.repo = [Product(**row) for row in csv_reader]
+
+    def do_create(self, product: Product):
+        self.repo.append(product)
+        self.do_save_file()
+
+    def read_all(self):
+        return self.repo
+
+    def do_read(self, id):
+        return self.repo[str(id)]
+
+    def do_update(self, id, product: Product):
+        self.repo[str(id)] = product
+        self.do_save_file()
+
+    def do_delete(self, id):
+        for product in self.repo:
+            if int(product.id) == int(id):
+                self.repo.remove(product)
+                break
+
+        self.do_save_file()
+
+    def do_save_file(self):
+        with open(self.filename, mode="w", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=self.fieldnames)
+            writer.writeheader()
+            for product in self.repo:
+                writer.writerow(asdict(product))
+
 class CSVRepository(Repository):
     def __init__(self, filename: str = "users.csv"):
         self.filename = filename
