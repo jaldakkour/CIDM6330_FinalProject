@@ -30,34 +30,128 @@ x: tuple[int, ...] = (1, 2, 3)  # Python 3.9+
 # On Python 3.10+, use the | operator when something could be one of a few types
 x: list[int | str] = [3, 5, "test", "fun"]  # Python 3.10+
 
+# Data Models (Pydantic)
 
 @dataclass
-class Product:
-    id: int
-    name: str
-    price: float
+class UserBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    gender: Optional[str] = None
+    height: Optional[float] = None
+    weight: Optional[float] = None
+    dateofbirth: Optional[date] = None
 
+class UserCreate(UserBase):
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
 
-class BaseProductRepository(ABC):
-    @abstractmethod
-    def do_create(self, product: Product):
-        pass
+class User(UserBase):
+    userID: int
+    goalID: Optional[int] = None
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
+    professionalID: Optional[int] = None
 
-    @abstractmethod
-    def read_all(self):
-        pass
+class ProfessionalBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    profession: Optional[str] = None
+    specialty: Optional[str] = None
 
-    @abstractmethod
-    def do_read(self, id):
-        pass
+class ProfessionalCreate(ProfessionalBase):
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
 
-    @abstractmethod
-    def do_update(self, id, product: Product):
-        pass
+class Professional(ProfessionalBase):
+    professionalID: int
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
 
-    @abstractmethod
-    def do_delete(self, id):
-        pass
+class GoalBase(BaseModel):
+    userID: int
+    goaltype: str
+    goalvalue: float
+    startdate: date
+    enddate: date
+
+class GoalCreate(GoalBase):
+    pass
+
+class Goal(GoalBase):
+    goalID: int
+
+class ActivityBase(BaseModel):
+    activitydate: date
+    starttime: time
+    endtime: time
+    activitytype: str
+
+class ActivityCreate(ActivityBase):
+    pass
+
+class Activity(ActivityBase):
+    activityID: int
+
+class RoutineBase(BaseModel):
+    activityID: int
+
+class RoutineCreate(RoutineBase):
+    pass
+
+class Routine(RoutineBase):
+    routineID: int
+
+class FoodBase(BaseModel):
+    FoodName: str
+    FoodBrand: Optional[str] = None
+    servingsize: float
+    servingunit: str
+    calories: float
+    protein: float
+    carbohydrates: float
+    fat: float
+    sodium: float
+
+class FoodCreate(FoodBase):
+    pass
+
+class Food(FoodBase):
+    foodID: int
+
+class MealBase(BaseModel):
+    nutritionID: int
+    mealdate: date
+    mealtime: time
+    mealtype: str
+
+class MealCreate(MealBase):
+    pass
+
+class Meal(MealBase):
+    mealID: int
+
+class NutritionBase(BaseModel):
+    mealID: int
+
+class NutritionCreate(NutritionBase):
+    pass
+
+class Nutrition(NutritionBase):
+    nutritionID: int
+
+class ClientBase(BaseModel):
+    userID: int
+
+class ClientCreate(ClientBase):
+    pass
+
+class Client(ClientBase):
+    clientID: int
+
 
 
 class MyCSVRepo(BaseProductRepository):
