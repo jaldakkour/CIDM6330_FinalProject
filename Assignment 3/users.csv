@@ -1,4 +1,3 @@
 #USER CSV
 
-username, password, emaiL, gender, height, weight, dateofbirth, goalID FK, routineID FK, nutritionID FK, professionalID FK, userID PK
-
+username, password, emaiL, gender, height, weight, dateofbirth
