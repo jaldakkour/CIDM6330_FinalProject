@@ -1,3 +1,46 @@
 #USER CSV
 
-firstname, lastname, username, password, emaiL, gender, height, weight, dateofbirth
+userid, firstname, lastname, username, password, emaiL, gender, height, weight, dateofbirth
+1,John,Smith,jsmith,P@$<span class="math-inline">wOrd1,john\.smith@example\.com,Male,180,85,1990\-01\-01
+2,Jane,Doe,jdoe,P@</span><span class="math-inline">wOrd2,jane\.doe@example\.com,Female,165,60,1992\-02\-02
+3,Robert,Jones,rjones,P@</span><span class="math-inline">wOrd3,robert\.jones@example\.com,Male,175,78,1985\-03\-03
+4,Emily,Brown,ebrown,P@</span><span class="math-inline">wOrd4,emily\.brown@example\.com,Female,170,68,1998\-04\-04
+5,Michael,Davis,mdavis,P@</span><span class="math-inline">wOrd5,michael\.davis@example\.com,Male,185,90,1979\-05\-05
+6,Sarah,Wilson,swilson,P@</span><span class="math-inline">wOrd6,sarah\.wilson@example\.com,Female,160,55,2001\-06\-06
+7,David,Garcia,dgarcia,P@</span><span class="math-inline">wOrd7,david\.garcia@example\.com,Male,190,95,1970\-07\-07
+8,Jennifer,Rodriguez,jrodriguez,P@</span><span class="math-inline">wOrd8,jennifer\.rodriguez@example\.com,Female,172,70,1995\-08\-08
+9,Christopher,Martinez,cmartinez,P@</span><span class="math-inline">wOrd9,christopher\.martinez@example\.com,Male,178,80,1988\-09\-09
+10,Jessica,Anderson,janderson,P@</span><span class="math-inline">wOrd10,jessica\.anderson@example\.com,Female,168,65,1993\-10\-10
+11,Matthew,Thomas,mthomas,P@</span><span class="math-inline">wOrd11,matthew\.thomas@example\.com,Male,182,88,1983\-11\-11
+12,Ashley,Jackson,ajackson,P@</span><span class="math-inline">wOrd12,ashley\.jackson@example\.com,Female,163,62,1999\-12\-12
+13,Daniel,White,dwhite,P@</span><span class="math-inline">wOrd13,daniel\.white@example\.com,Male,177,77,1986\-01\-13
+14,Amanda,Harris,aharris,P@</span><span class="math-inline">wOrd14,amanda\.harris@example\.com,Female,171,69,1997\-02\-14
+15,Joseph,Martin,jmartin,P@</span><span class="math-inline">wOrd15,joseph\.martin@example\.com,Male,187,92,1978\-03\-15
+16,Stephanie,Thompson,sthompson,P@</span><span class="math-inline">wOrd16,stephanie\.thompson@example\.com,Female,159,54,2002\-04\-16
+17,Andrew,Moore,amoore,P@</span><span class="math-inline">wOrd17,andrew\.moore@example\.com,Male,192,97,1969\-05\-17
+18,Nicole,Lee,nlee,P@</span><span class="math-inline">wOrd18,nicole\.lee@example\.com,Female,173,71,1994\-06\-18
+19,Patrick,Walker,pwalker,P@</span><span class="math-inline">wOrd19,patrick\.walker@example\.com,Male,179,81,1989\-07\-19
+20,Heather,Perez,hperez,P@</span><span class="math-inline">wOrd20,heather\.perez@example\.com,Female,167,64,1991\-08\-20
+21,Samuel,Gonzalez,sgonzalez,P@</span><span class="math-inline">wOrd21,samuel\.gonzalez@example\.com,Male,183,89,1984\-09\-21
+22,Elizabeth,Young,eyoung,P@</span><span class="math-inline">wOrd22,elizabeth\.young@example\.com,Female,164,63,1998\-10\-22
+23,Benjamin,Allen,ballen,P@</span><span class="math-inline">wOrd23,benjamin\.allen@example\.com,Male,176,76,1987\-11\-23
+24,Lauren,Sanchez,lsanchez,P@</span><span class="math-inline">wOrd24,lauren\.sanchez@example\.com,Female,170,67,1996\-12\-24
+25,Brandon,Wright,bwright,P@</span><span class="math-inline">wOrd25,brandon\.wright@example\.com,Male,186,91,1977\-01\-25
+26,Christina,King,cking,P@</span><span class="math-inline">wOrd26,christina\.king@example\.com,Female,158,53,2003\-02\-26
+27,Kevin,Scott,kscott,P@</span><span class="math-inline">wOrd27,kevin\.scott@example\.com,Male,191,96,1968\-03\-27
+28,Angela,Green,agreen,P@</span><span class="math-inline">wOrd28,angela\.green@example\.com,Female,174,72,1993\-04\-28
+29,Jonathan,Baker,jbaker,P@</span><span class="math-inline">wOrd29,jonathan\.baker@example\.com,Male,180,82,1990\-05\-29
+30,Melissa,Adams,madams,P@</span><span class="math-inline">wOrd30,melissa\.adams@example\.com,Female,166,65,1992\-06\-30
+31,Justin,Nelson,jnelson,P@</span><span class="math-inline">wOrd31,justin\.nelson@example\.com,Male,175,79,1985\-07\-31
+32,Rebecca,Hill,rhill,P@</span><span class="math-inline">wOrd32,rebecca\.hill@example\.com,Female,169,69,1999\-08\-01
+33,Ryan,Ramirez,rramirez,P@</span><span class="math-inline">wOrd33,ryan\.ramirez@example\.com,Male,184,90,1979\-09\-02
+34,Victoria,Campbell,vcampbell,P@</span><span class="math-inline">wOrd34,victoria\.campbell@example\.com,Female,161,56,2001\-10\-03
+35,Eric,Mitchell,emitchell,P@</span><span class="math-inline">wOrd35,eric\.mitchell@example\.com,Male,193,98,1970\-11\-04
+36,Laura,Roberts,lroberts,P@</span><span class="math-inline">wOrd36,laura\.roberts@example\.com,Female,171,70,1995\-12\-05
+37,Adam,Carter,acarter,P@</span><span class="math-inline">wOrd37,adam\.carter@example\.com,Male,177,80,1988\-01\-06
+38,Kimberly,Phillips,kphillips,P@</span><span class="math-inline">wOrd38,kimberly\.phillips@example\.com,Female,168,66,1993\-02\-07
+39,Brian,Evans,bevans,P@</span><span class="math-inline">wOrd39,brian\.evans@example\.com,Male,181,88,1983\-03\-08
+40,Amy,Turner,aturner,P@</span><span class="math-inline">wOrd40,amy\.turner@example\.com,Female,162,63,1999\-04\-09
+41,Gregory,Torres,gtorres,P@</span><span class="math-inline">wOrd41,gregory\.torres@example\.com,Male,178,78,1986\-05\-10
+42,Rachel,Parker,rparker,P@</span><span class="math-inline">wOrd42,rachel\.parker@example\.com,Female,172,68,1997\-06\-11
+43,Joshua,Collins,jcollins,P@</span>$wOrd43,joshua.collins@example.com,Male,190
