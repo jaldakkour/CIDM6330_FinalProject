@@ -231,15 +231,15 @@ def main():
     print("generic repository example")
     csv_repo = MyCSVRepo("users.csv", "id", ["userid", "firstname", "lastname", "username", "password", "email", "gender", "height", "weight", "dateofbirth"])
 
-    # csv_repo.do_create(Product(1, "apple", 1.99))
-    # csv_repo.do_create(Product(2, "banana", 0.99))
-    # csv_repo.do_create(Product(3, "cherry", 2.99))
+     csv_repo.do_create(UserBase(1, "apple", 1.99))
+     csv_repo.do_create(UserBase(2, "banana", 0.99))
+     csv_repo.do_create(UserBase(3, "cherry", 2.99))
 
-    # csv_repo.do_create(Product(4, "pear", 1.59))
-    # csv_repo.do_create(Product(5, "raspberry", 1.09))
-    # csv_repo.do_create(Product(6, "lemon", 0.59))
+     csv_repo.do_create(UserBase(4, "pear", 1.59))
+     csv_repo.do_create(UserBase(5, "raspberry", 1.09))
+     csv_repo.do_create(UserBase(6, "lemon", 0.59))
+     csv_repo.do_create(UserBase(7, "pineapple", 5.99))
 
-    # csv_repo.do_create(Product(7, "pineapple", 5.99))
     csv_repo.do_delete(3)
 
     print(csv_repo.read_all())
