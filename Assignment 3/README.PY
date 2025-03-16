@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from sqlmodel import SQLModel, create_engine, Session, Field, select
-
+import CSV 
 
 # typehints review
 
