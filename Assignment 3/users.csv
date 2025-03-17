@@ -1,1 +1,148 @@
+import csv
+import os
+from typing import List, Optional 
+
+class CSVRepository(Repository):
+    def __init__(self, data_dir: str):
+        self.data_dir = data_dir
+        os.makedirs(data_dir, exist_ok=True)
+
+    def _get_next_id(self, filename: str) -> int:
+        filepath = os.path.join(self.data_dir, filename)
+        if not os.path.exists(filepath) or os.stat(filepath).st_size == 0:
+            return 1
+        with open(filepath, "r") as csvfile:
+            reader = csv.DictReader(csvfile)
+            ids = [int(row["userID"]) for row in reader if row.get("userID")]
+            if ids:
+                return max(ids) + 1
+            else:
+                return 1
+
+    def create_user(self, user: UserCreate) -> User:
+        user_id = self._get_next_id("users.csv")
+        user_data = user.dict()
+        user_data["userID"] = user_id
+        with open(os.path.join(self.data_dir, "users.csv"), "a", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=user_data.keys())
+            if csvfile.tell() == 0:
+                writer.writeheader()
+            writer.writerow(user_data)
+        return User(**user_data)
+
+def create_user(self, user: UserCreate) -> User:
+        return self._create_item("users.csv", user.dict(), User)
+
+    def get_user(self, user_id: int) -> Optional[User]:
+        return self._get_item("users.csv", "userID", user_id, User)
+
+    def get_all_users(self) -> List[User]:
+        return self._get_all_items("users.csv", User)
+
+    def create_goal(self, goal: GoalCreate) -> Goal:
+        return self._create_item("goals.csv", goal.dict(), Goal)
+
+    def get_goal(self, goal_id: int) -> Optional[Goal]:
+        return self._get_item("goals.csv", "goalID", goal_id, Goal)
+
+    def create_activity(self, activity: ActivityCreate) -> Activity:
+        return self._create_item("activities.csv", activity.dict(), Activity)
+
+    def get_activity(self, activity_id: int) -> Optional[Activity]:
+        return self._get_item("activities.csv", "activityID", activity_id, Activity)
+
+    def create_routine(self, routine: RoutineCreate) -> Routine:
+        return self._create_item("routines.csv", routine.dict(), Routine)
+
+    def get_routine(self, routine_id: int) -> Optional[Routine]:
+        return self._get_item("routines.csv", "routineID", routine_id, Routine)
+
+    def create_food(self, food: FoodCreate) -> Food:
+        return self._create_item("foods.csv", food.dict(), Food)
+
+    def get_food(self, food_id: int) -> Optional[Food]:
+        return self._get_item("foods.csv", "foodID", food_id, Food)
+
+    def create_meal(self, meal: MealCreate) -> Meal:
+        return self._create_item("meals.csv", meal.dict(), Meal)
+
+    def get_meal(self, meal_id: int) -> Optional[Meal]:
+        return self._get_item("meals.csv", "mealID", meal_id, Meal)
+
+    def create_nutrition(self, nutrition: NutritionCreate) -> Nutrition:
+        return self._create_item("nutritions.csv", nutrition.dict(), Nutrition)
+
+    def get_nutrition(self, nutrition_id: int) -> Optional[Nutrition]:
+        return self._get_item("nutritions.csv", "nutritionID", nutrition_id, Nutrition)
+
+    def create_client(self, client: ClientCreate) -> Client:
+        return self._create_item("clients.csv", client.dict(), Client)
+
+    def get_client(self, client_id: int) -> Optional[Client]:
+        return self._get_item("clients.csv", "clientID", client_id, Client)
+
+    def create_professional(self, professional: ProfessionalsCreate) -> Professionals:
+        return self._create_item("professionals.csv", professional.dict(), Professionals)
+
+    def get_professional(self, professional_id: int) -> Optional[Professionals]:
+        return self._get_item("professionals.csv", "professionalID", professional_id, Professionals)
+
+    def get_user(self, user_id: int) -> Optional[User]:
+        try:
+            with open(os.path.join(self.data_dir, "users.csv"), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if int(row["userID"]) == user_id:
+                        return User(**row)
+        except FileNotFoundError:
+            return None
+        return None
+
+    def get_all_users(self) -> List[User]:
+        users = []
+        try:
+            with open(os.path.join(self.data_dir, "users.csv"), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    users.append(User(**row))
+        except FileNotFoundError:
+            pass
+        return users
+
+        def _create_item(self, filename: str, item_data: dict, model_type):
+        item_id_field = next((k for k in item_data.keys() if k.endswith('ID')), 'id')
+        item_id = self._get_next_id(filename)
+        item_data[item_id_field] = item_id
+
+        with open(os.path.join(self.data_dir, filename), "a", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=item_data.keys())
+            if csvfile.tell() == 0:
+                writer.writeheader()
+            writer.writerow(item_data)
+        return model_type(**item_data)
+
+    def _get_item(self, filename: str, id_field: str, item_id: int, model_type):
+        try:
+            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if int(row[id_field]) == item_id:
+                        return model_type(**row)
+        except FileNotFoundError:
+            return None
+        return None
+
+    def _get_all_items(self, filename: str, model_type):
+        items = []
+        try:
+            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    items.append(model_type(**row))
+        except FileNotFoundError:
+            pass
+        return items
+
+
+
 
