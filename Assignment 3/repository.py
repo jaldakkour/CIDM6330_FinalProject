@@ -1,13 +1,32 @@
 #Complete the SQLModel Repository:
 from typing import List, Optional
+from sqlmodel import SQLModel, Session, create_engine, select
+from trial import (Nutrition, Activity, ActivityCreate, Client, ClientCreate, Food, FoodCreate, Goal, GoalCreate, Meal, MealCreate, Nutrition, NutritionCreate, Professionals, ProfessionalsCreate, Repository, Routine, RoutineCreate, SQLModelActivity, SQLModelClient, SQLModelFood, SQLModelGoal, SQLModelMeal, SQLModelNutrition, SQLModelProfessionals, SQLModelRoutine, SQLModelUser, User, UserCreate
+)
 
-from sqlmodel import Session, select
-from trial import Nutrition
-from trial import Activity, ActivityCreate, Client, ClientCreate, Food, FoodCreate, Goal, GoalCreate, Meal, MealCreate, NutritionCreate, Professionals, ProfessionalsCreate, Repository, Routine, RoutineCreate, SQLModelActivity, SQLModelClient, SQLModelFood, SQLModelGoal, SQLModelMeal, SQLModelNutrition, SQLModelProfessionals, SQLModelRoutine, SQLModelUser, User
-
+#Database URL (insert later)
+DATABASE_URL = "sqlite:///./test.db"  
 
 class SQLModelRepository(Repository):
-    
+    def __init__(self, db_url: str):
+        self.engine = create_engine(db_url)
+        SQLModel.metadata.create_all(self.engine)
+
+def create_user(self, user: UserCreate) -> User:
+    with Session(self.engine) as session:
+        db_user = SQLModelUser(**user.dict())
+        session.add(db_user)
+        session.commit()
+        session.refresh(db_user)
+        return User(**db_user.__dict__)
+
+    def get_user(self, user_id: int) -> Optional[User]:
+        with Session(self.engine) as session:
+            db_user = session.get(SQLModelUser, user_id)
+            if db_user:
+                return User(**db_user.__dict__)
+            return None
+        
     def get_all_users(self) -> List[User]:
         with Session(self.engine) as session:
             users = session.exec(select(SQLModelUser)).all()
