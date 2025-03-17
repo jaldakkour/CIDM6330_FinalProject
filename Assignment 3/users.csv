@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import List, Optional 
+from typing import List, Optional
 
 class CSVRepository(Repository):
     def __init__(self, data_dir: str):
@@ -19,18 +19,41 @@ class CSVRepository(Repository):
             else:
                 return 1
 
-    def create_user(self, user: UserCreate) -> User:
-        user_id = self._get_next_id("users.csv")
-        user_data = user.dict()
-        user_data["userID"] = user_id
-        with open(os.path.join(self.data_dir, "users.csv"), "a", newline="") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=user_data.keys())
+    def _create_item(self, filename: str, item_data: dict, model_type):
+        item_id_field = next((k for k in item_data.keys() if k.endswith('ID')), 'id')
+        item_id = self._get_next_id(filename)
+        item_data[item_id_field] = item_id
+
+        with open(os.path.join(self.data_dir, filename), "a", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=item_data.keys())
             if csvfile.tell() == 0:
                 writer.writeheader()
-            writer.writerow(user_data)
-        return User(**user_data)
+            writer.writerow(item_data)
+        return model_type(**item_data)
 
-def create_user(self, user: UserCreate) -> User:
+    def _get_item(self, filename: str, id_field: str, item_id: int, model_type):
+        try:
+            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if int(row[id_field]) == item_id:
+                        return model_type(**row)
+        except FileNotFoundError:
+            return None
+        return None
+
+    def _get_all_items(self, filename: str, model_type):
+        items = []
+        try:
+            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    items.append(model_type(**row))
+        except FileNotFoundError:
+            pass
+        return items
+
+    def create_user(self, user: UserCreate) -> User:
         return self._create_item("users.csv", user.dict(), User)
 
     def get_user(self, user_id: int) -> Optional[User]:
@@ -86,63 +109,6 @@ def create_user(self, user: UserCreate) -> User:
 
     def get_professional(self, professional_id: int) -> Optional[Professionals]:
         return self._get_item("professionals.csv", "professionalID", professional_id, Professionals)
-
-    def get_user(self, user_id: int) -> Optional[User]:
-        try:
-            with open(os.path.join(self.data_dir, "users.csv"), "r") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    if int(row["userID"]) == user_id:
-                        return User(**row)
-        except FileNotFoundError:
-            return None
-        return None
-
-    def get_all_users(self) -> List[User]:
-        users = []
-        try:
-            with open(os.path.join(self.data_dir, "users.csv"), "r") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    users.append(User(**row))
-        except FileNotFoundError:
-            pass
-        return users
-
-        def _create_item(self, filename: str, item_data: dict, model_type):
-        item_id_field = next((k for k in item_data.keys() if k.endswith('ID')), 'id')
-        item_id = self._get_next_id(filename)
-        item_data[item_id_field] = item_id
-
-        with open(os.path.join(self.data_dir, filename), "a", newline="") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=item_data.keys())
-            if csvfile.tell() == 0:
-                writer.writeheader()
-            writer.writerow(item_data)
-        return model_type(**item_data)
-
-    def _get_item(self, filename: str, id_field: str, item_id: int, model_type):
-        try:
-            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    if int(row[id_field]) == item_id:
-                        return model_type(**row)
-        except FileNotFoundError:
-            return None
-        return None
-
-    def _get_all_items(self, filename: str, model_type):
-        items = []
-        try:
-            with open(os.path.join(self.data_dir, filename), "r") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    items.append(model_type(**row))
-        except FileNotFoundError:
-            pass
-        return items
-
 
 
 
