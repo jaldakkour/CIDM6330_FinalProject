@@ -1,8 +1,12 @@
+from typing import List, Optional, Dict
+from datetime import date, time
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict, field, InitVar
 import csv
-
-
+import json
+import sqlite3
+from sqlmodel import SQLModel, Field, create_engine, Session, select
 
 # typehints review
 
@@ -31,46 +35,28 @@ x: tuple[int, ...] = (1, 2, 3)  # Python 3.9+
 # On Python 3.10+, use the | operator when something could be one of a few types
 x: list[int | str] = [3, 5, "test", "fun"]  # Python 3.10+
 
-# Data Models (Pydantic)
+app = FastAPI()
 
-@dataclass
+### --- Data Models ---
+
 class UserBase(BaseModel):
     username: str
     password: str
     email: str
-    gender: Optional[str] = None
-    height: Optional[float] = None
-    weight: Optional[float] = None
-    dateofbirth: Optional[date] = None
-
-class UserCreate(UserBase):
+    gender: str
+    height: float
+    weight: float
+    dateofbirth: date
     goalID: Optional[int] = None
     routineID: Optional[int] = None
     nutritionID: Optional[int] = None
     professionalID: Optional[int] = None
+
+class UserCreate(UserBase):
+    pass
 
 class User(UserBase):
     userID: int
-    goalID: Optional[int] = None
-    routineID: Optional[int] = None
-    nutritionID: Optional[int] = None
-    professionalID: Optional[int] = None
-
-class ProfessionalBase(BaseModel):
-    username: str
-    password: str
-    email: str
-    profession: Optional[str] = None
-    specialty: Optional[str] = None
-
-class ProfessionalCreate(ProfessionalBase):
-    routineID: Optional[int] = None
-    nutritionID: Optional[int] = None
-
-class Professional(ProfessionalBase):
-    professionalID: int
-    routineID: Optional[int] = None
-    nutritionID: Optional[int] = None
 
 class GoalBase(BaseModel):
     userID: int
@@ -153,100 +139,188 @@ class ClientCreate(ClientBase):
 class Client(ClientBase):
     clientID: int
 
+class ProfessionalsBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    profession: str
+    specialty: str
+    routineID: Optional[int] = None
+    nutritionID: Optional[int] = None
 
+class ProfessionalsCreate(ProfessionalsBase):
+    pass
 
-class MyCSVRepo(BaseProductRepository):
-    """
-    Note: CSV files don’t maintain data types. All field values are considered str and empty values are considered None.
-    """
+class Professionals(ProfessionalsBase):
+    professionalID: int
 
-    def __init__(self, filename: str, id_field: str, fieldnames: list):
+### --- Repository Interfaces ---
 
-        self.repo = list[UserBase] # this is a typehint for a list of User objects
-        self.filename = filename
-        self.fieldnames = fieldnames
+class Repository(ABC):
+    @abstractmethod
+    def create_user(self, user: UserCreate) -> User:
+        pass
 
-        with open(filename, mode="r", newline="") as file:
-            csv_reader = csv.DictReader(file)
-            # list comprehension: https://www.w3schools.com/python/python_lists_comprehension.asp
-            self.repo = [UserBase(**row) for row in csv_reader]
+    @abstractmethod
+    def get_user(self, user_id: int) -> Optional[User]:
+        pass
 
-    def do_create(self, userbase: UserBase):
-        self.repo.append(UserBase)
-        self.do_save_file()
+    @abstractmethod
+    def get_all_users(self) -> List[User]:
+        pass
 
-    def read_all(self):
-        return self.repo
+    @abstractmethod
+    def create_goal(self, goal: GoalCreate) -> Goal:
+        pass
 
-    def do_read(self, id):
-        return self.repo[str(id)]
+    @abstractmethod
+    def get_goal(self, goal_id: int) -> Optional[Goal]:
+        pass
 
-    def do_update(self, id, userbase: UserBase):
-        self.repo[str(id)] = userbase
-        self.do_save_file()
+    @abstractmethod
+    def create_activity(self, activity: ActivityCreate) -> Activity:
+        pass
 
-    def do_delete(self, id):
-        for userbase in self.repo:
-            if int(userbase.id) == int(id):
-                self.repo.remove(userbase)
-                break
+    @abstractmethod
+    def get_activity(self, activity_id: int) -> Optional[Activity]:
+        pass
+    
+    @abstractmethod
+    def create_routine(self, routine: RoutineCreate) -> Routine:
+        pass
 
-        self.do_save_file()
+    @abstractmethod
+    def get_routine(self, routine_id: int) -> Optional[Routine]:
+        pass
 
-    def do_save_file(self):
-        with open(self.filename, mode="w", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=self.fieldnames)
-            writer.writeheader()
-            for userbase in self.repo:
-                writer.writerow(asdict(userbase))
+    @abstractmethod
+    def create_food(self, food: FoodCreate) -> Food:
+        pass
 
+    @abstractmethod
+    def get_food(self, food_id: int) -> Optional[Food]:
+        pass
 
-class MyMemoryRepo(BaseProductRepository):
+    @abstractmethod
+    def create_meal(self, meal: MealCreate) -> Meal:
+        pass
 
-    def __init__(self, id_field: str):
+    @abstractmethod
+    def get_meal(self, meal_id: int) -> Optional[Meal]:
+        pass
 
-        self.repo = list[UserBase]
+    @abstractmethod
+    def create_nutrition(self, nutrition: NutritionCreate) -> Nutrition:
+        pass
 
-    def do_create(self, userbase: UserBase):
-        self.repo.append(userbase)
+    @abstractmethod
+    def get_nutrition(self, nutrition_id: int) -> Optional[Nutrition]:
+        pass
 
-    def read_all(self):
-        return self.repo
+    @abstractmethod
+    def create_client(self, client: ClientCreate) -> Client:
+        pass
 
-    def do_read(self, id):
-        return self.repo[id]
+    @abstractmethod
+    def get_client(self, client_id: int) -> Optional[Client]:
+        pass
 
-    def do_update(self, id, userbase: UserBase):
-        self.repo[id] = userbase
+    @abstractmethod
+    def create_professional(self, professional: ProfessionalsCreate) -> Professionals:
+        pass
 
-    def do_delete(self, id):
-        for useerbase in self.repo:
-            if int(userbase.id) == int(id):
-                self.repo.remove(userbase)
-                break
-        
+    @abstractmethod
+    def get_professional(self, professional_id: int) -> Optional[Professionals]:
+        pass
 
+### --- SQLModel Repository ---
 
-# Defining main function
-def main():
-    print("generic repository example")
-    csv_repo = MyCSVRepo("users.csv", "id", ["userid", "firstname", "lastname", "username", "password", "email", "gender", "height", "weight", "dateofbirth"])
+class SQLModelUser(SQLModel, table=True):
+    userID: Optional[int] = Field(default=None, primary_key=True)
+    username: str
+    password: str
+    email: str
+    gender: str
+    height: float
+    weight: float
+    dateofbirth: date
+    goalID: Optional[int] = Field(default=None, foreign_key="goal.goalID")
+    routineID: Optional[int] = Field(default=None, foreign_key="routine.routineID")
+    nutritionID: Optional[int] = Field(default=None, foreign_key="nutrition.nutritionID")
+    professionalID: Optional[int] = Field(default=None, foreign_key="professionals.professionalID")
 
-     csv_repo.do_create(UserBase(1, "apple", 1.99))
-     csv_repo.do_create(UserBase(2, "banana", 0.99))
-     csv_repo.do_create(UserBase(3, "cherry", 2.99))
+class SQLModelGoal(SQLModel, table=True):
+    goalID: Optional[int] = Field(default=None, primary_key=True)
+    userID: int
+    goaltype: str
+    goalvalue: float
+    startdate: date
+    enddate: date
 
-     csv_repo.do_create(UserBase(4, "pear", 1.59))
-     csv_repo.do_create(UserBase(5, "raspberry", 1.09))
-     csv_repo.do_create(UserBase(6, "lemon", 0.59))
-     csv_repo.do_create(UserBase(7, "pineapple", 5.99))
+class SQLModelActivity(SQLModel, table=True):
+    activityID: Optional[int] = Field(default=None, primary_key=True)
+    activitydate: date
+    starttime: time
+    endtime: time
+    activitytype: str
 
-    csv_repo.do_delete(3)
+class SQLModelRoutine(SQLModel, table=True):
+    routineID: Optional[int] = Field(default=None, primary_key=True)
+    activityID: int
 
-    print(csv_repo.read_all())
+class SQLModelFood(SQLModel, table=True):
+    foodID: Optional[int] = Field(default=None, primary_key=True)
+    FoodName: str
+    FoodBrand: Optional[str]
+    servingsize: float
+    servingunit: str
+    calories: float
+    protein: float
+    carbohydrates: float
+    fat: float
+    sodium: float
 
+class SQLModelMeal(SQLModel, table=True):
+    mealID: Optional[int] = Field(default=None, primary_key=True)
+    nutritionID: int
+    mealdate: date
+    mealtime: time
+    mealtype: str
 
-# Using the special variable
-# __name__
-if __name__ == "__main__":
-    main()
+class SQLModelNutrition(SQLModel, table=True):
+    nutritionID: Optional[int] = Field(default=None, primary_key=True)
+    mealID: int
+
+class SQLModelClient(SQLModel, table=True):
+    clientID: Optional[int] = Field(default=None, primary_key=True)
+    userID: int
+
+class SQLModelProfessionals(SQLModel, table=True):
+    professionalID: Optional[int] = Field(default=None, primary_key=True)
+    username: str
+    password: str
+    email: str
+    profession: str
+    specialty: str
+    routineID: Optional[int] = Field(default=None, foreign_key="routine.routineID")
+    nutritionID: Optional[int] = Field(default=None, foreign_key="nutrition.nutritionID")
+
+class SQLModelRepository(Repository):
+    def __init__(self, db_url: str):
+        self.engine = create_engine(db_url)
+        SQLModel.metadata.create_all(self.engine)
+
+    def create_user(self, user: UserCreate) -> User:
+        with Session(self.engine) as session:
+            db_user = SQLModelUser(**user.dict())
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            return User(**db_user.__dict__)
+
+    def get_user(self, user_id: int) -> Optional[User]:
+        with Session(self.engine) as session:
+            db_user = session.get(SQLModelUser, user_id)
+            if db_user:
+                return User(**db_user.__dict__)
+            return None
