@@ -125,4 +125,5 @@ Feature: Personalized Exercise Routine Creation
 
 5. UML Diagram
 
-![Diagram of Sanare Soma](file:///Users/janealdakkour/Desktop/School/6330%20Soft%20Arch/Assignment1%20(1).png)
+![Diagram of Sanare Soma](https://github.com/jaldakkour/CIDM6330/blob/main/Assignment%201/Assignment1.png)
+
