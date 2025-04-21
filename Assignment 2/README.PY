@@ -2,9 +2,11 @@
 def generate_mermaid_er_diagram():
     """Generates a Mermaid ER diagram string based on the provided schema."""
     mermaid_code = """
+
 erDiagram
     
-    User {
+"""
+User {
         varchar username
         varchar password
         varchar email
