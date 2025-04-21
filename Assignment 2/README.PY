@@ -107,13 +107,5 @@ if __name__ == "__main__":
     mermaid_syntax = generate_mermaid_er_diagram()
     print(mermaid_syntax)
 
-    # You can save this output to a .mmd file
-    with open("health_app_er_diagram.mmd", "w") as f:
-        f.write(mermaid_syntax)
-    print("\nMermaid ER diagram syntax saved to health_app_er_diagram.mmd")
 
-    print("\nTo visualize this diagram, you can use:")
-    print("- An online Mermaid editor (e.g., https://mermaid.live/)")
-    print("- A Markdown editor with Mermaid support (e.g., Obsidian, Typora)")
-    print("- The Mermaid CLI to generate an image (requires installation: npm install -g @mermaid-js/mermaid-cli)")
 
