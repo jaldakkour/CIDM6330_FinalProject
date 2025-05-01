@@ -95,4 +95,4 @@ erDiagram
     Meal }o--|| Nutrition: contains
     Client }o--|| Professionals: has
     Client }o--|| User: is
-'''    
+``` 
