@@ -1,20 +1,4 @@
-1.Create an Entity Relationship Diagram
-```mermaid
-erDiagram
-   
-    User {
-        varchar username
-        varchar password
-        varchar email
-        varchar gender
-        float height
-        float weight
-        date dateofbirth
-        int goalID FK
-        int routineID FK
-        int nutritionID FK
-        int professionalID FK
-        int userID PK
+
     }
 
     Professionals {
