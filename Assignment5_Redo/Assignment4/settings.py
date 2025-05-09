@@ -85,3 +85,9 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Denver'  
 
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+INSTALLED_APPS = [
+    # ... other apps
+    'django_celery_results',
+    'django_celery_beat',
+]
