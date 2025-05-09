@@ -12,3 +12,17 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+
+# celery.py
+import os
+from celery import Celery
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project_name.settings')
+
+app = Celery('your_project_name')
+
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+@app.task(bind=True, ignore_result=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
