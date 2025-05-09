@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,3 +92,13 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
 ]
+
+CELERY_BEAT_SCHEDULE = {
+    'send-daily-report': {
+        'task': 'your_app.tasks.send_daily_report',
+        'schedule': crontab(hour=8, minute=0),  # Run at 8:00 AM daily
+        'args': (),
+    },
+}
+
+from celery.schedules import crontab
