@@ -2,7 +2,6 @@
 from django.contrib import admin
 from .models import SanareSoma
 
-# Register your models here.
 @admin.register(SanareSoma)
 class SanareSomaAdmin(admin.ModelAdmin):
     list_display = ('title', 'description')
