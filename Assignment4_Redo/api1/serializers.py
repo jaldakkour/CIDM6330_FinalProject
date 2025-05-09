@@ -1,18 +1,16 @@
 from rest_framework import serializers
-from .models import User, Professional, Goal, Activity, Routine, Food, Meal, Nutrition, Client  # Import your models
+from .models import User, Professional, Goal, Activity, Routine, Food, Meal, Nutrition, Client  
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'  # Or specify fields
+        fields = '__all__' 
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password', 'email', 'gender', 'height', 'weight', 'dateofbirth', 'goalID', 'routineID', 'nutritionID', 'professionalID']
 
-
-# Similar serializers for Professional, Goal, Activity, Routine, Food, Meal, Nutrition, Client
 class ProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Professional
