@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Goal for Client</title>
+</head>
+<body>
+    <h1>Set a Goal for Your Client</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="client">Select Client:</label>
+        <select name="client" id="client">
+     
