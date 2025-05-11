@@ -1,1 +1,35 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Goal for Client</title>
+</head>
+<body>
+    <h1>Set a Goal for Your Client</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="client">Select Client:</label>
+        <select name="client" id="client">
+            {% for client in clients %}
+                <option value="{{ client.id }}">{{ client.user.username }}</option>
+            {% endfor %}
+        </select>
+        {{ form.as_p }}
+        {% if form.errors %}
+            <div style="color: red;">
+                <p>Please correct the following errors:</p>
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        <li>{{ field }}: {{ errors|join:", " }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% if success_message %}
+            <div style="color: green;">
+                <p>{{ success_message }}</p>
+            </div>
+        {% endif %}
+        <button type="submit">Set Goal</button>
+    </form>
+</body>
+</html>
