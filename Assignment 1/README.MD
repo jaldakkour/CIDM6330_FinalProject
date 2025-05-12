@@ -46,11 +46,11 @@ Table of contents
 
 2.1 User Stories
 
-   *As a user recovering from a knee injury, I want to create a personalized exercise program so that I can regain strength and mobility safely
+   - As a user recovering from a knee injury, I want to create a personalized exercise program so that I can regain strength and mobility safely
    
-   *As a professional nutritionist, I want to be able to contribute generalized advice and potentially offer to develop personalized plans for individual users
+   - As a professional nutritionist, I want to be able to contribute generalized advice and potentially offer to develop personalized plans for individual users
    
-   *As a user with the goal to lose weight to help relieve joint pain, I want to track my macronutrient intake so that I can ensure I'm meeting my dietary needs.
+   - As a user with the goal to lose weight to help relieve joint pain, I want to track my macronutrient intake so that I can ensure I'm meeting my dietary needs.
 
 
 2.2 User Cases
@@ -92,38 +92,37 @@ Feature: Personalized Exercise Routine Creation
     The platform will be a mobile app and/or website that integrates nutritional tracking, personalized exercise program            development, and access to professional guidance. It will use an incremental development approach, focusing on core             features such as the exercise routine development, the nutritional tracker, and the professionals connections pages each initially and expanding the functionality of each over time. It will also allow me to integrate them later on. 
 
    3.2 Interfaces
-   
 
-    *input fields for food logging 
+    - input fields for food logging 
 
-    *input fields for searching exercises
+    - input fields for searching exercises
 
-    *Option to rearrange exercises order
+    - Option to rearrange exercises order
 
-   *Buttons for navigation and action execution
+    - Buttons for navigation and action execution
 
-    *Charts and graphs for data visualization on tracking nutritional stats
+    - Charts and graphs for data visualization on tracking nutritional stats
 
-    *Search functionality for food database and exercise library
+    - Search functionality for food database and exercise library
 
-    *messaging forum to/from professionals
+    - messaging forum to/from professionals
 
 
    3.3 Behaviors
 
-    *The system should accurately calculate macronutrient and calorie intake
+    - The system should accurately calculate macronutrient and calorie intake
 
-    *The system should provide personalized exercise suggestions based on user input
+    - The system should provide personalized exercise suggestions based on user input
 
-    *The system should allow users to customize thier nutrition and exercise plans
+    - The system should allow users to customize thier nutrition and exercise plans
 
-    *The system should allow users to connect to professionals 
+    - The system should allow users to connect to professionals 
 
-    *The system should provide recommendations to highly rated professionals on the site and that are best suited to that individuals needs
+    - The system should provide recommendations to highly rated professionals on the site and that are best suited to that individuals needs
 
-    *The system should securely store user data
+    - The system should securely store user data
 
 5. UML Diagram
 
-![Diagram of Sanare Soma](https://github.com/jaldakkour/CIDM6330/blob/main/Assignment%201/Assignment1.png)
+![Diagram of Sanare Soma](https://github.com/jaldakkour/CIDM6330_FinalProject/blob/main/Assignment%201/Assignment1_for_final.png)
 
